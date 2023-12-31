@@ -4,6 +4,14 @@ from ..structs.matrix import Matrix
 
 
 fn norm(A: Matrix) -> Float32:
+    """ Function `norm`: find matrix norm.
+
+    Args:
+        A: Matrix.
+
+    Returns:
+        Float32: Matrix norm.
+    """
 
     let A_T: Matrix = Matrix(A.cols, A.rows)
     transpose(A_T, A)
@@ -22,6 +30,7 @@ fn norm(A: Matrix) -> Float32:
 
 fn _tile[tiled_fn: Static2DTileUnitFunc, tile_x: Int, tile_y: Int](
          end_x: Int, end_y: Int) -> None:
+    """ Tiling helper function. """
 
     for y in range(0, end_y, tile_y):
         for x in range(0, end_x, tile_x):

@@ -3,6 +3,16 @@ from .vector import Vector
 
 
 fn random_matrix(rows: Int, cols: Int) -> Matrix:
+    """ Function `random_matrix`: creates a (rows, cols) shape Matrix with
+    random values (from normal dist.).
+
+    Args:
+        rows: Matrix dim 0.
+        cols: Matrix dim 1.
+
+    Returns:
+        Matrix: Random matrix shape (rows, cols).
+    """
 
     let data = DTypePointer[DType.float32].alloc(rows * cols)
     random.rand(data, rows * cols)
@@ -10,6 +20,15 @@ fn random_matrix(rows: Int, cols: Int) -> Matrix:
 
 
 fn random_vector(length: Int) -> Vector:
+    """ Function `random_vector`: creates vector of specified length with
+    random values (from normal dist.).
+
+    Args:
+        length: Length/size of vector.
+
+    Returns:
+        Vector: Random vector of `length`.
+    """
 
     let data = DTypePointer[DType.float32].alloc(length)
     random.rand(data, length)
@@ -17,6 +36,15 @@ fn random_vector(length: Int) -> Vector:
 
 
 fn identity_matrix(dim: Int) -> Matrix:
+    """ Function `identity_matrix`: creates a (dim, dim) shape identity Matrix
+    (values of 1.0 along diagonal).
+
+    Args:
+        dim: Dimension of identity matrix.
+
+    Returns:
+        Matrix: Identity matrix shape (dim, dim).
+    """
 
     let data = DTypePointer[DType.float32].alloc(dim * dim)
     memset_zero(data, dim * dim)
