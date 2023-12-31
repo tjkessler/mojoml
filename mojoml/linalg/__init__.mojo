@@ -61,6 +61,40 @@ fn matmul(C: Matrix, A: Matrix, B: Matrix) -> None:
     parallelize[calc_row](C.rows, C.rows)
 
 
+fn add(C: Matrix, A: Matrix, B: Matrix) raises -> None:
+    """ Function `add`: C <- A + B .
+
+    Args:
+        C: Resulting matrix shape (m, n).
+        A: First matrix shape (m, n).
+        B: Second matrix shape (m, n).
+    """
+
+    alias nelts = simdwidthof[DType.float32]()
+    alias tile_size = 4
+
+    if A.rows != B.rows or A.cols != B.cols:
+        raise Error("Invalid matrix sizes")
+
+    @parameter
+    fn calc_row(m: Int):
+
+        @parameter
+        fn calc_tile[tile_x: Int, tile_y: Int](x: Int, y: Int):
+
+            for k in range(y, y + tile_y):
+
+                @parameter
+                fn _add[nelts: Int](n: Int):
+                    C.store[nelts](m, n+x, A[m, k] + B.load[nelts](k, n+x))
+
+                vectorize_unroll[nelts, tile_x // nelts, _add](tile_x)
+
+        _tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
+
+    parallelize[calc_row](C.rows, C.rows)
+
+
 fn transpose(A_T: Matrix, A: Matrix) -> None:
     """ Function `transpose`: B <- A.T .
 
