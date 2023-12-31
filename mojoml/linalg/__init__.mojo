@@ -4,6 +4,14 @@ from ..structs.matrix import Matrix
 
 
 fn norm(A: Matrix) -> Float32:
+    """ Function `norm`: find matrix norm.
+
+    Args:
+        A: Matrix.
+
+    Returns:
+        Float32: Matrix norm.
+    """
 
     let A_T: Matrix = Matrix(A.cols, A.rows)
     transpose(A_T, A)
@@ -22,6 +30,7 @@ fn norm(A: Matrix) -> Float32:
 
 fn _tile[tiled_fn: Static2DTileUnitFunc, tile_x: Int, tile_y: Int](
          end_x: Int, end_y: Int) -> None:
+    """ Tiling helper function. """
 
     for y in range(0, end_y, tile_y):
         for x in range(0, end_x, tile_x):
@@ -55,6 +64,40 @@ fn matmul(C: Matrix, A: Matrix, B: Matrix) -> None:
                     )
 
                 vectorize_unroll[nelts, tile_x // nelts, dot](tile_x)
+
+        _tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
+
+    parallelize[calc_row](C.rows, C.rows)
+
+
+fn add(C: Matrix, A: Matrix, B: Matrix) raises -> None:
+    """ Function `add`: C <- A + B .
+
+    Args:
+        C: Resulting matrix shape (m, n).
+        A: First matrix shape (m, n).
+        B: Second matrix shape (m, n).
+    """
+
+    alias nelts = simdwidthof[DType.float32]()
+    alias tile_size = 4
+
+    if A.rows != B.rows or A.cols != B.cols:
+        raise Error("Invalid matrix sizes")
+
+    @parameter
+    fn calc_row(m: Int):
+
+        @parameter
+        fn calc_tile[tile_x: Int, tile_y: Int](x: Int, y: Int):
+
+            for k in range(y, y + tile_y):
+
+                @parameter
+                fn _add[nelts: Int](n: Int):
+                    C.store[nelts](m, n+x, A[m, k] + B.load[nelts](k, n+x))
+
+                vectorize_unroll[nelts, tile_x // nelts, _add](tile_x)
 
         _tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
 
