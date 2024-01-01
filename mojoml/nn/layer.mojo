@@ -1,4 +1,4 @@
-from algorithm import vectorize
+from algorithm import parallelize, vectorize
 from utils.index import Index
 
 from ..linalg import matmul, add
@@ -53,11 +53,16 @@ struct Linear:
         """
 
         alias nelts = simdwidthof[DType.float32]()
-        for i in range(X.rows):
-            for j in range(X.cols):
-                @parameter
-                fn dot_bias[nelts: Int](k: Int):
-                    Y.store[nelts](i, k, Y.load[nelts](i, k) + X[i, j] *\
-                     self.weights.load[nelts](j, k) +\
-                     self.biases.load[nelts](k, 0))
-                vectorize[nelts, dot_bias](self.weights.cols)
+
+        @parameter
+        fn calc_row(m: Int):
+
+            @parameter
+            fn _forward[nelts: Int](n: Int):
+                Y.store[nelts](
+                    m, n, X.load[nelts](m, n) * self.weights.load[nelts](m, n) + self.biases.load[nelts](m, 0)
+                )
+
+            vectorize[nelts, _forward](Y.cols)
+
+        parallelize[calc_row](Y.rows, Y.rows)
