@@ -1,6 +1,7 @@
 from algorithm import parallelize, Static2DTileUnitFunc, vectorize_unroll
 
 from ..structs.matrix import Matrix
+from ..utils import tile
 
 
 fn norm(A: Matrix) -> Float32:
@@ -26,15 +27,6 @@ fn norm(A: Matrix) -> Float32:
         if _val > eig_max:
             eig_max = _val
     return math.sqrt(eig_max)
-
-
-fn _tile[tiled_fn: Static2DTileUnitFunc, tile_x: Int, tile_y: Int](
-         end_x: Int, end_y: Int) -> None:
-    """ Tiling helper function. """
-
-    for y in range(0, end_y, tile_y):
-        for x in range(0, end_x, tile_x):
-            tiled_fn[tile_x, tile_y](x, y)
 
 
 fn matmul(C: Matrix, A: Matrix, B: Matrix) -> None:
@@ -65,7 +57,7 @@ fn matmul(C: Matrix, A: Matrix, B: Matrix) -> None:
 
                 vectorize_unroll[nelts, tile_x // nelts, dot](tile_x)
 
-        _tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
+        tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
 
     parallelize[calc_row](C.rows, C.rows)
 
@@ -99,7 +91,7 @@ fn add(C: Matrix, A: Matrix, B: Matrix) raises -> None:
 
                 vectorize_unroll[nelts, tile_x // nelts, _add](tile_x)
 
-        _tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
+        tile[calc_tile, nelts * tile_size, tile_size](A.cols, C.cols)
 
     parallelize[calc_row](C.rows, C.rows)
 
