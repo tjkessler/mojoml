@@ -2,6 +2,31 @@ from tensor import Tensor, TensorSpec
 from utils.index import Index
 
 
+fn determinant(X: Matrix) -> Float32:
+    """ Function `determinant`: calculates the determinant of a square matrix.
+
+    Args:
+        X: Input matrix shape (m, m).
+
+    Returns:
+        Float32: Determinant of matrix `X`.
+    """
+
+    # base case 2x2 matrix
+    if X.rows == 2:
+        return (X[0, 0] * X[1, 1]) - (X[0, 1] * X[1, 0])
+
+    # recursion using minor matrices for > 2x2
+    var det: Float32 = 0.0
+    var sign: Int = 1
+    for i in range(X.cols):
+        let _minor: Matrix = Matrix(X.rows - 1, X.cols - 1)
+        minor(_minor, X, 0, i)
+        det += sign * X[0, i] * determinant(_minor)
+        sign = -1 * sign
+    return det
+
+
 fn minor(Y: Matrix, X: Matrix, row: Int, col: Int) -> None:
     """ Function `minor`: get minor matrix, i.e., excluding specified row
     and column.
