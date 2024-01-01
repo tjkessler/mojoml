@@ -24,17 +24,18 @@ from mojoml.linalg import matmul, norm, transpose
 
 fn main() -> None:
 
-    let m1: Matrix = random_matrix(512, 512)
-    let m2: Matrix = random_matrix(512, 512)
+    let m1: Matrix = random_matrix(16, 32)
+    let m2: Matrix = random_matrix(32, 48)
 
     # m_matmul <- m1 @ m2
-    let m_matmul: Matrix = Matrix(512, 512)
+    let m_matmul: Matrix = Matrix(16, 48)
     matmul(m_matmul, m1, m2)
 
-    let m1_norm: Float32 = norm(m1)
+    let m3: Matrix = random_matrix(32, 32)
+    let m3_norm: Float32 = norm(m3)
 
     # m1_T <- m1.T
-    let m1_T: Matrix = Matrix(512, 512)
+    let m1_T: Matrix = Matrix(32, 16)
     transpose(m1_T, m1)
 ```
 
