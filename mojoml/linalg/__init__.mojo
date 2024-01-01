@@ -1,4 +1,4 @@
-from algorithm import parallelize, Static2DTileUnitFunc, vectorize_unroll
+from algorithm import parallelize, vectorize_unroll
 
 from ..structs.matrix import Matrix
 from ..utils import tile

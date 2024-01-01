@@ -2,7 +2,6 @@ from algorithm import parallelize, vectorize
 from math import max, pow, exp
 
 from ..structs import Matrix
-from ..utils import tile
 
 
 fn mse_loss(mse: Matrix, y_pred: Matrix, y_true: Matrix) -> None:

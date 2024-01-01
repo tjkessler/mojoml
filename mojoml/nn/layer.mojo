@@ -1,7 +1,5 @@
 from algorithm import parallelize, vectorize
-from utils.index import Index
 
-from ..linalg import matmul, add
 from ..structs import Matrix
 from ..structs.generators import random_matrix
 
