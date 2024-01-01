@@ -2,6 +2,29 @@ from tensor import Tensor, TensorSpec
 from utils.index import Index
 
 
+fn minor(Y: Matrix, X: Matrix, row: Int, col: Int) -> None:
+    """ Function `minor`: get minor matrix, i.e., excluding specified row
+    and column.
+
+    Args:
+        Y: Resulting minor matrix shape (m - 1, n - 1).
+        X: Input matrix shape (m, n).
+        row: Row to exclude.
+        col: Column to exclude.
+    """
+
+    var _r: Int = 0
+    var _c: Int = 0
+    for j in range(X.rows):
+        if j != row:
+            for i in range(X.cols):
+                if i != col:
+                    Y[_r, _c] = X[j, i]
+                    _c += 1
+            _r += 1
+            _c = 0
+
+
 struct Matrix:
 
     var data: DTypePointer[DType.float32]
@@ -35,6 +58,17 @@ struct Matrix:
         self.data = data
         self.rows = rows
         self.cols = cols
+
+    fn repr(self: Self) -> String:
+
+        var s: String = ""
+        for j in range(self.rows):
+            for i in range(self.cols):
+                s += String(self.__getitem__(j, i))
+                if i < self.cols - 1:
+                    s += "\t"
+            s += "\n"
+        return s
 
     fn __getitem__(self: Self, y: Int, x: Int) -> Float32:
         """ Method `__getitem__`: get value at (y, x) with
