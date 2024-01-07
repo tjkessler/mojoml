@@ -1,3 +1,5 @@
+
+
 from .matrix import Matrix
 from .vector import Vector
 
@@ -51,3 +53,22 @@ fn identity_matrix(dim: Int) -> Matrix:
     for i in range(dim):
         data.store(i * dim + i, 1.0)
     return Matrix(dim, dim, data)
+
+
+fn ones_matrix(rows: Int, cols: Int) -> Matrix:
+    """ Function `ones_matrix`: creates a (rows, cols) shape matrix with all
+    entries = 1.0.
+
+    Args:
+        rows: Dim 0 of matrix.
+        cols: Dim 1 of matrix.
+
+    Returns:
+        Matrix: Ones matrix shape (rows, cols).
+    """
+
+    let data = DTypePointer[DType.float32].alloc(rows * cols)
+    memset_zero(data, rows * cols)
+    for i in range(rows * cols):
+        data.store(i, 1.0)
+    return Matrix(rows, cols, data)
